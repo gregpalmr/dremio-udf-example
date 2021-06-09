@@ -45,16 +45,19 @@ If you are running Dremio as a "stand-alone" installation (on 1 or more servers 
 
      $ ls /opt/dremio/jars/3rdparty/
 
-If you are running Dremio on a Kubernetes cluster, then you must copy the udf-string-agg-1.0.0.jar file to the Docker container and save the container as a new image. Then upload that new image to your private container repository. The following commands may be used:
+If you are running Dremio on a Kubernetes cluster, then you must copy the udf-string-agg-1.0.0.jar file to the Docker container and save the container as a new image. Then upload that new image to your private container repository. The following commands may be used.
 
      $ docker run dremio/dremio-oss
 
-     From a different command shell, copy the file to the Docker container
+     From a different command shell, copy the file to the Docker container:
 
      $ docker cp ./target/udf-string-agg-1.0.0.jar <CONTAINER_ID>:/opt/dremio/jars/3rdparty/
 
+     Save the modified docker image to a new image:
+
      $ docker commit <CONTAINER_ID> <new image name>:<tag>
 
+     Upload the modified docker image to your private container registry:
      $ docker push <hub-user>/<repo-name>:<tag>
 
 Then modify the Dremio helm chart values.yaml file to use the new iamge tag.
