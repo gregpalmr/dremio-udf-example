@@ -12,6 +12,7 @@ Some user defined functions may operating on values contained in a single result
      WHERE hire_date > TO_DATE('2015-01-01', 'yyyy-MM-dd');
 
      |name|hire_date|email|
+     ---
      |Alexis Bull|1997-02-20|ABULL@email.com|
      |Julia Dellinger|1998-06-24|JDELLING@email.com|
      |Anthony Cabrio|1999-02-07|ACABRIO@email.com|
