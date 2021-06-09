@@ -3,10 +3,18 @@ An example of a user defined function deployed in Dremio 15.x
 
 # Background
 
-Dremio user defined functions (UDF) are implemented within the Gandiva execution engine. For some background on this topic, see:
+Dremio user defined functions (UDF) allow users to extend the list of functions that can be included in their SQL queries. This example shows how an aggregate function can be implemented within the Dremio query engine.
 
-- https://arrow.apache.org/blog/2018/12/05/gandiva-donation
-- https://www.dremio.com/adding-a-user-define-function-to-gandiva
+Some user defined functions may operating on values contained in a single result row, like this:
+
+     SELECT my_string_concat_udf(first_name, last_name), hire_date, city
+     FROM employees 
+     WHERE hire_date > TO_DATE('2015-01-01', 'yyyy-MM-dd');
+
+Other user defined functions, like this example, may operate on values from multiple result rows, like this:
+
+     SELECT string_agg(country_code, ',') 
+     FROM employees; 
 
 NOTE: UDFs are not officially supported by Dremio, meaning you cannot raise a case with Dremio Support and expect them to help you with it. Assistance can only be made for a UDF in the form of billable Professional Services work.
 
