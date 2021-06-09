@@ -100,7 +100,11 @@ If you are running Dremio on a Kubernetes cluster, then use the helm chart to re
 
 After restarting the Dremio cluster, run a test SQL command to see the results of the string_agg UDF. Like this:
 
-   SQL> SELECT string_agg(name, ',') FROM sys.options
+     SQL> SELECT string_agg(name, ',') FROM sys.options
+
+|options|
+|---|
+|acceleration.orphan.cleanup_in_milliseconds,accelerator.enable.subhour.policies|
 
 ---
 
