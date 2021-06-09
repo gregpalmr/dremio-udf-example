@@ -5,7 +5,7 @@ An example of a user defined function deployed in Dremio 15.x
 
 Dremio user defined functions (UDF) are implemented within the Gandiva execution engine. For some background on this topic, see:
 
-- https://arrow.apache.org/blog/2018/12/05/gandiva-donation/
+- https://arrow.apache.org/blog/2018/12/05/gandiva-donation
 - https://www.dremio.com/adding-a-user-define-function-to-gandiva
 
 NOTE: UDFs are not officially supported by Dremio, meaning you cannot raise a case with Dremio Support and expect them to help you with it. Assistance can only be made for a UDF in the form of billable Professional Services work.
