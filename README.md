@@ -24,8 +24,11 @@ Some user defined functions may operating on values contained in a single result
 
 Other user defined functions, like this example, may operate on values from multiple result rows, like this:
 
-     SELECT my_string_agg_udf(country_code, ',') 
+     SELECT my_string_agg_udf(country_code, ',') AS countries
      FROM employees; 
+
+|countries|
+|UK,FR,CN,US,GE,BY|
 
 NOTE: UDFs are not officially supported by Dremio, meaning you cannot raise a case with Dremio Support and expect them to help you with it. Assistance can only be made for a UDF in the form of billable Professional Services work.
 
