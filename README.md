@@ -13,14 +13,14 @@ Some user defined functions may operating on values contained in a single result
 
 |name|hire_date|email|
 |---|---|---|
-|Alexis Bull|1997-02-20|ABULL@email.com|
-|Julia Dellinger|1998-06-24|JDELLING@email.com|
-|Anthony Cabrio|1999-02-07|ACABRIO@email.com|
-|Kelly Chung|1997-06-14|KCHUNG@email.com|
-|Jennifer Dilly|1997-08-13|JDILLY@email.com|
-|Timothy Gates|1998-07-11|TGATES@email.com|
-|Randall Perkins|1999-12-19|RPERKINS@email.com|
-|Sarah Bell|1996-02-04|SBELL@email.com|
+|Alexis Bull|1997-02-20|`ABULL@email.com`|
+|Julia Dellinger|1998-06-24|`JDELLING@email.com`|
+|Anthony Cabrio|1999-02-07|`ACABRIO@email.com`|
+|Kelly Chung|1997-06-14|`KCHUNG@email.com`|
+|Jennifer Dilly|1997-08-13|`JDILLY@email.com`|
+|Timothy Gates|1998-07-11|`TGATES@email.com`|
+|Randall Perkins|1999-12-19|`RPERKINS@email.com`|
+|Sarah Bell|1996-02-04|`SBELL@email.com`|
 
 Other user defined functions, like this example, may operate on values from multiple result rows, like this:
 
