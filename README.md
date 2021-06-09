@@ -5,7 +5,7 @@ An example of a user defined function deployed in Dremio 15.x
 
 Dremio user defined functions (UDF) allow users to extend the list of functions that can be included in their SQL queries. This example shows how an aggregate function can be implemented within the Dremio query engine.
 
-Some user defined functions may operating on values contained in a single result row, like this:
+Some user defined functions may operate on values contained in a single result row, like this:
 
      SELECT my_string_concat_udf(first_name, last_name) AS name, hire_date, email
      FROM employees 
