@@ -58,13 +58,13 @@ Use the following commands to compile the Java source code:
 
      $ mvn clean install -DskipTests
 
-Upon a successful build the UDF's jar file will be place in the targets directory:
+Upon a successful build the UDF's jar file will be placed in the targets directory:
 
     $ ls ./target/udf-string-agg-1.0.0.jar
 
 ### Step 3. Copy the UDF's jar file to the Dremio Coordinator and Executor nodes
 
-If you are running Dremio as a "stand-alone" installation (on 1 or more servers or cloud instances), use scp or your favorate file copying utility to copy the udf-string-agg-1.0.0.jar file to every Dremio Coordinator and Executor node. Place the jar file in the Dremio 3rd party jars directory, which is usually found here:
+If you are running Dremio as a "stand-alone" installation (on one or more servers or cloud instances), use scp or your favorate file copying utility to copy the udf-string-agg-1.0.0.jar file to every Dremio Coordinator and Executor node. Place the jar file in the Dremio 3rd party jars directory, which is usually found here:
 
      $ ls /opt/dremio/jars/3rdparty/
 
@@ -83,7 +83,10 @@ If you are running Dremio on a Kubernetes cluster, then you must copy the udf-st
      Upload the modified docker image to your private container registry:
      $ docker push <hub-user>/<repo-name>:<tag>
 
-Then modify the Dremio helm chart values.yaml file to use the new iamge tag.
+Then modify the Dremio helm chart values.yaml file to use the new iamge tag. Like this:
+
+     image: my-hub-user/dremio-oss
+     imageTag: 15.3_UDFs
 
 ### Step 4. Restart all Dremio nodes
 
