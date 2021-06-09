@@ -28,6 +28,7 @@ Other user defined functions, like this example, may operate on values from mult
      FROM employees; 
 
 |countries|
+|---|
 |UK,FR,CN,US,GE,BY|
 
 NOTE: UDFs are not officially supported by Dremio, meaning you cannot raise a case with Dremio Support and expect them to help you with it. Assistance can only be made for a UDF in the form of billable Professional Services work.
