@@ -41,14 +41,14 @@ Other user defined functions may operate on values across multiple result rows, 
 
 ### UDF: concat_udf()
 
-The concat_udf() example user defined function (UDF) is a single row oriented UDF that illustrates how to operate on multiple column values within each row. It implements a string concatenating function that takes two arguments and merges them into one output string. This example also shows how log entries can be added via the Dremio server side STDOUT and STDERR environments.
+The concat_udf() example user defined function (UDF) is a single row oriented UDF that illustrates how to operate on multiple column values within each row. It implements a string concatenating function that takes two arguments and merges them into one output string. This example also shows how log entries can be written (from within the UDF) to the Dremio server log file via STDOUT and STDERR.
 This example UDF is implemented in the source file:
 
      src/main/java/com/dremio/example_udfs/ConcatUDF.java
 
 ### UDF: string_agg_udf()
 
-The string_agg_udf() example user defined function (UDF) is a aggregation function that operates on values from multiple rows, combinging the values into a single result row. This example implements a string_agg() function that combines column values from a set of rows. It also shows how to use the Java System.getPropreties() method to read properties defined in the Dremio configuration file. Specifically the /opt/dremio/conf/dremio-env file. This example UDF is implemented in the source file:
+The string_agg_udf() example user defined function (UDF) is a aggregation function that operates on values from multiple rows, combinging the values into a single result row. This example implements a string_agg() like function that combines column values from a set of rows. It also shows how to use the Java System.getPropreties() method to read properties defined in the Dremio configuration file. Specifically the /opt/dremio/conf/dremio-env file. This example UDF is implemented in the source file:
 
      src/main/java/com/dremio/example_udfs/StringAggUDF.java
 
@@ -77,7 +77,7 @@ Use the following commands to compile the Java source code:
 
      $ mvn clean install -DskipTests
 
-Upon a successful build the UDF's jar file will be placed in the targets directory:
+Upon a successful build the UDF's jar file will be placed in the target directory:
 
     $ ls ./target/dremio-udf-examples-15.5.0-*.jar
 
@@ -99,7 +99,7 @@ If you are running Dremio on a Kubernetes cluster, then you must copy the jar fi
 
      From a different command shell, copy the file to the Docker container:
 
-     $ docker cp ./target/udf-string-agg-1.0.0.jar <CONTAINER_ID>:/opt/dremio/jars/3rdparty/
+     $ docker cp ./target/dremio-udf-examples-15.5.0-*.jar <CONTAINER_ID>:/opt/dremio/jars/3rdparty/
 
      Save the modified docker image to a new image:
 
