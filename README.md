@@ -3,11 +3,15 @@ An example of a user defined function deployed in Dremio 15.x
 
 # Background
 
-Dremio user defined functions (UDF) allow users to extend the list of functions that can be included in their SQL queries. This example shows how an aggregate function can be implemented within the Dremio query engine.
+Dremio user defined functions (UDF) allow users to extend the list of functions that can be included in their SQL queries. These example shows how an row oriented function and an aggregate function can be implemented within the Dremio query engine.
+
+NOTE: UDFs are not officially supported by Dremio, meaning you cannot raise a case with Dremio Support and expect them to help you with it. Assistance can only be made for a UDF in the form of billable Professional Services work.
+
+### Row Oriented Functions
 
 Some user defined functions may operate on values contained in a single result row, like this:
 
-     SELECT my_string_concat_udf(first_name, last_name) AS name, hire_date, email
+     SELECT concat_udf(first_name, last_name) AS name, hire_date, email
      FROM employees 
      WHERE hire_date > TO_DATE('2015-01-01', 'yyyy-MM-dd');
 
@@ -22,16 +26,31 @@ Some user defined functions may operate on values contained in a single result r
 |Randall Perkins|1999-12-19|`RPERKINS@email.com`|
 |Sarah Bell|1996-02-04|`SBELL@email.com`|
 
-Other user defined functions, like this example, may operate on values from multiple result rows, like this:
+### Aggreation Functions
 
-     SELECT my_string_agg_udf(country_code, ',') AS countries
+Other user defined functions may operate on values across multiple result rows, like this:
+
+     SELECT tring_agg_udf(country_code, ',') AS countries
      FROM employees; 
 
 |countries|
 |:--|
 |UK,FR,CN,US,GE,BY|
 
-NOTE: UDFs are not officially supported by Dremio, meaning you cannot raise a case with Dremio Support and expect them to help you with it. Assistance can only be made for a UDF in the form of billable Professional Services work.
+# These Examples
+
+### UDF: concat_udf()
+
+The concat_udf() example user defined function (UDF) is a single row oriented UDF that illustrates how to operate on multiple column values within each row. It implements a string concatenating function that takes two arguments and merges them into one output string. This example also shows how log entries can be added via the Dremio server side STDOUT and STDERR environments.
+This example UDF is implemented in the source file:
+
+     src/main/java/com/dremio/example_udfs/ConcatUDF.java
+
+### UDF: string_agg_udf()
+
+The string_agg_udf() example user defined function (UDF) is a aggregation function that operates on values from multiple rows, combinging the values into a single result row. This example implements a string_agg() function that combines column values from a set of rows. It also shows how to use the Java System.getPropreties() method to read properties defined in the Dremio configuration file. Specifically the /opt/dremio/conf/dremio-env file. This example UDF is implemented in the source file:
+
+     src/main/java/com/dremio/example_udfs/StringAggUDF.java
 
 # Requirements
 
@@ -60,15 +79,21 @@ Use the following commands to compile the Java source code:
 
 Upon a successful build the UDF's jar file will be placed in the targets directory:
 
-    $ ls ./target/udf-string-agg-1.0.0.jar
+    $ ls ./target/dremio-udf-examples-15.5.0-*.jar
 
 ### Step 3. Copy the UDF's jar file to the Dremio Coordinator and Executor nodes
 
-If you are running Dremio as a "stand-alone" installation (on one or more servers or cloud instances), use scp or your favorate file copying utility to copy the udf-string-agg-1.0.0.jar file to every Dremio Coordinator and Executor node. Place the jar file in the Dremio 3rd party jars directory, which is usually found here:
+Copy the newly built JAR file to the Dremio nodes so that references to the UDF functions can be resolved correctly.
+
+Stand-alone Deployment
+
+If you are running Dremio as a "stand-alone" installation (on one or more servers or cloud instances), use scp or your favorate file copying utility to copy the jar file to every Dremio Coordinator and Executor node. Place the jar file in the Dremio 3rd party jars directory, which is usually found here:
 
      $ ls /opt/dremio/jars/3rdparty/
 
-If you are running Dremio on a Kubernetes cluster, then you must copy the udf-string-agg-1.0.0.jar file to the Docker container and save the container as a new image. Then upload that new image to your private container repository. The following commands may be used.
+Kubernetes Deployment
+
+If you are running Dremio on a Kubernetes cluster, then you must copy the jar file to the Docker container and save the container as a new image. Then upload that new image to your private container repository. The following commands may be used.
 
      $ docker run dremio/dremio-oss
 
@@ -88,6 +113,15 @@ Then modify the Dremio helm chart values.yaml file to use the new iamge tag. Lik
      image: my-hub-user/dremio-oss
      imageTag: 15.3_UDFs
 
+YARN Deployment
+
+If you are running Dremio executors as YARN containers, then use scp or your favorate file copying utility to copy the jar file to every Dremio Coordinator node. Place the jar file in the Dremio 3rd party jars directory, which is usually found here:
+
+     $ ls /opt/dremio/jars/3rdparty/
+
+Then restart your Dremio engines to redeploy the Dremio Executors as YARN containers. The UDF jar file will be packaged by the Dremio Coordinator node and made available to each YARN container.
+
+
 ### Step 4. Restart all Dremio nodes
 
 If you are running Dremio as a "stand-alone" installation (on 1 or more servers or cloud instances), then use the sysetmctl command to restart all of the Dremio Coordinator nodes and Executor nodes. Use this command on each node:
@@ -98,16 +132,53 @@ If you are running Dremio on a Kubernetes cluster, then use the helm chart to re
 
      $ helm upgrade my-dremio-cluster dremio_v2 -f values.dremio.yaml --namespace dremio
 
+If you are running Dremio as YARN containers, then you must:
+
+     a. Stop the Dremio engine (the YARN containers)
+          - Use the Dremio Web UI or REST API
+
+     b. Restart the Coordinator node (usually running on an Hadoop edge node server) 
+         - Use the command: systemctl restart dremio
+
+     c. Launch the Dremio engine (the YARN containers)
+          - Use the Dremio Web UI or REST API
 
 ### Step 5. Test the UDF
 
-After restarting the Dremio cluster, run a test SQL command to see the results of the string_agg UDF. Like this:
+After restarting the Dremio cluster, run a few test SQL commands to see the results of the UDFs. Like this:
 
-     SQL> SELECT string_agg(name, ',') FROM sys.options
+     SQL> SELECT string_agg_udf(name, ',') AS options FROM sys.options;
 
 |options|
 |:--|
 |acceleration.orphan.cleanup_in_milliseconds,accelerator.enable.subhour.policies,accelerator.enable_agg_join,accelerator.enable_default_raw,accelerator.enable_multijoin,accelerator.matching.filter_threshold,accelerator.matching.timeout_seconds,accelerator.matching.tracing,accelerator.raw.remove_project,accelerator.simplified_match,accelerator.system.limit,accelerator.system.verbose.logging,auth.personal-access-token.max_lifetime_days,auth.personal-access-tokens.enabled,catalog.refresh.permissions.canedit.enabled,client.max_metadata_count,client.tools.powerbi,client.tools.qlik,client.tools.tableau,client.use_legacy_catalog_name,coordinator.alive_queries.limit,coordinator.heap.monitoring.enable,coordinator.heap.monitoring.thresh.percentage,coordinator.metadata.refreshes.concurrency,coordinator.reconcile.queries.enable,coordinator.reconcile.queries.frequency.secs,dac.download.from_jobs_store,dac.download.records_limit,dac.format.preview.batch_size,dac.format.preview.fast_preview,dac.format.preview.max_ms,dac.format.preview.min_records,dac.format.preview.target,dac.search.last_reindex,dac.search.refresh,debug.results.max.age_in_milliseconds,debug.test_memory_limit,dremio.coordinator.enable_version_check,dremio.coordinator.rest.run_query.async,dremio.deltalake.enabled,dremio.exec.operator_batch_bytes,dremio.exec.spill.check.interval,dremio.exec.spill.healthcheck.enable,dremio.exec.spill.limit.bytes,dremio.exec.spill.limit.percentage,dremio.exec.spill.sweep.interval,dremio.exec.spill.sweep.threshold,dremio.exec.storage.file.partition.column.label,dremio.exec.testing.controls,dremio.execution.v2,dremio.iceberg.enabled,dremio.iceberg.min_max.enabled,dremio.materialization.cache.enabled,dremio.profile.debug_columns,dremio.sliced,dremio.sliced.debug_max_runtime,dremio.sliced.enable_monitor,dremio.sliced.migration_multiple,dremio.sliced.min_runtime,dremio.sliced.num_threads,dremio.sliced.spindown_multiple,dremio.sliced.use_cpu_pinning,dremio.sliced.warn_max_runtime,dremio.spill.warn_max_runtime,dremio.store.dfs.max_files,dremio.store.dfs.max_splits,dremio.store.file.dir-field-enabled,dremio.store.file.file-field-enabled,dremio.store.file.file-field-label|
+
+And like this:
+
+     SQL> SELECT concat_udf(name, kind) AS option FROM sys.options;
+
+|option|
+|:--|
+|acceleration.orphan.cleanup_in_millisecondsLONG|
+|accelerator.enable.subhour.policiesBOOLEAN|
+|accelerator.enable_agg_joinBOOLEAN|
+|accelerator.enable_default_rawBOOLEAN|
+|accelerator.enable_multijoinBOOLEAN|
+|accelerator.matching.filter_thresholdLONG|
+|accelerator.matching.timeout_secondsLONG|
+|accelerator.matching.tracingBOOLEAN|
+|accelerator.raw.remove_projectBOOLEAN|
+|accelerator.simplified_matchBOOLEAN|
+|accelerator.system.limitLONG|
+|accelerator.system.verbose.loggingBOOLEAN|
+|dremio.store.file.file-field-enabledBOOLEAN|
+|dremio.store.file.file-field-labelSTRING|
+|dremio.store.file.mod-field-enabledBOOLEAN|
+|dremio.store.file.mod-field-labelSTRING|
+|dremio.test.parquet.schema.fallback.onlyBOOLEAN|
+|dremio.ui.outside_communication_disabledBOOLEAN|
+|dremio.wlm.direct_routingBOOLEAN|
+|exec.batch.field.list.size-estimateLONG|
 
 ---
 
