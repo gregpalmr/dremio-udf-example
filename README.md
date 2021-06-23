@@ -30,7 +30,7 @@ Some user defined functions may operate on values contained in a single result r
 
 Other user defined functions may operate on values across multiple result rows, like this:
 
-     SELECT tring_agg_udf(country_code, ',') AS countries
+     SELECT string_agg_udf(country_code, ',') AS countries
      FROM employees; 
 
 |countries|
