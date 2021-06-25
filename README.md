@@ -52,6 +52,13 @@ The string_agg_udf() example user defined function (UDF) is a aggregation functi
 
      src/main/java/com/dremio/example_udfs/StringAggUDF.java
 
+### UDF: parse_xml_udf()
+The parse_xml_udf() example user defined function (UDF) reads xml formated content from a column and extracts elements from it based on an XPATH search expression (see: https://docs.oracle.com/javase/7/docs/api/javax/xml/xpath/package-summary.html). This UDF returns the extracted results as a simple JSON array.
+This example UDF is implemented in the source file:
+
+     src/main/java/com/dremio/example_udfs/ParseXmlUDF.java
+
+
 # Requirements
 
 To compile this source code, the following are required:
@@ -143,42 +150,99 @@ If you are running Dremio as YARN containers, then you must:
      c. Launch the Dremio engine (the YARN containers)
           - Use the Dremio Web UI or REST API
 
-### Step 5. Test the UDF
+### Step 5. Test the UDFs
 
-After restarting the Dremio cluster, run a few test SQL commands to see the results of the UDFs. Like this:
+UDF: string_add_udf()
 
-     SQL> SELECT string_agg_udf(name, ',') AS options FROM sys.options;
+After restarting the Dremio cluster, run a test SQL command to see the results of the string_agg_udf() works. Like this:
 
-|options|
+     SQL> SELECT string_agg_udf(column_name, ',') AS columns 
+          FROM (
+            SELECT * FROM information_schema.columns
+          )
+
+|columns|
 |:--|
-|acceleration.orphan.cleanup_in_milliseconds,accelerator.enable.subhour.policies,accelerator.enable_agg_join,accelerator.enable_default_raw,accelerator.enable_multijoin,accelerator.matching.filter_threshold,accelerator.matching.timeout_seconds,accelerator.matching.tracing,accelerator.raw.remove_project,accelerator.simplified_match,accelerator.system.limit,accelerator.system.verbose.logging,auth.personal-access-token.max_lifetime_days,auth.personal-access-tokens.enabled,catalog.refresh.permissions.canedit.enabled,client.max_metadata_count,client.tools.powerbi,client.tools.qlik,client.tools.tableau,client.use_legacy_catalog_name,coordinator.alive_queries.limit,coordinator.heap.monitoring.enable,coordinator.heap.monitoring.thresh.percentage,coordinator.metadata.refreshes.concurrency,coordinator.reconcile.queries.enable,coordinator.reconcile.queries.frequency.secs,dac.download.from_jobs_store,dac.download.records_limit,dac.format.preview.batch_size,dac.format.preview.fast_preview,dac.format.preview.max_ms,dac.format.preview.min_records,dac.format.preview.target,dac.search.last_reindex,dac.search.refresh,debug.results.max.age_in_milliseconds,debug.test_memory_limit,dremio.coordinator.enable_version_check,dremio.coordinator.rest.run_query.async,dremio.deltalake.enabled,dremio.exec.operator_batch_bytes,dremio.exec.spill.check.interval,dremio.exec.spill.healthcheck.enable,dremio.exec.spill.limit.bytes,dremio.exec.spill.limit.percentage,dremio.exec.spill.sweep.interval,dremio.exec.spill.sweep.threshold,dremio.exec.storage.file.partition.column.label,dremio.exec.testing.controls,dremio.execution.v2,dremio.iceberg.enabled,dremio.iceberg.min_max.enabled,dremio.materialization.cache.enabled,dremio.profile.debug_columns,dremio.sliced,dremio.sliced.debug_max_runtime,dremio.sliced.enable_monitor,dremio.sliced.migration_multiple,dremio.sliced.min_runtime,dremio.sliced.num_threads,dremio.sliced.spindown_multiple,dremio.sliced.use_cpu_pinning,dremio.sliced.warn_max_runtime,dremio.spill.warn_max_runtime,dremio.store.dfs.max_files,dremio.store.dfs.max_splits,dremio.store.file.dir-field-enabled,dremio.store.file.file-field-enabled,dremio.store.file.file-field-label|
+|CATALOG_NAME,CATALOG_DESCRIPTION,CATALOG_CONNECT,TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,O|
 
-And like this:
+UDF: concat_udf()
 
-     SQL> SELECT concat_udf(name, kind) AS option FROM sys.options;
+After restarting the Dremio cluster, run a test SQL command to see the results of the concat_udf() works. Like this:
+options
 
-|option|
+     SQL> SELECT concat_udf(table_name, concat_udf('.', column_name)) AS column_names 
+          FROM (
+            SELECT * FROM information_schema.columns
+          )
+
+|columns_names|
 |:--|
-|acceleration.orphan.cleanup_in_millisecondsLONG|
-|accelerator.enable.subhour.policiesBOOLEAN|
-|accelerator.enable_agg_joinBOOLEAN|
-|accelerator.enable_default_rawBOOLEAN|
-|accelerator.enable_multijoinBOOLEAN|
-|accelerator.matching.filter_thresholdLONG|
-|accelerator.matching.timeout_secondsLONG|
-|accelerator.matching.tracingBOOLEAN|
-|accelerator.raw.remove_projectBOOLEAN|
-|accelerator.simplified_matchBOOLEAN|
-|accelerator.system.limitLONG|
-|accelerator.system.verbose.loggingBOOLEAN|
-|dremio.store.file.file-field-enabledBOOLEAN|
-|dremio.store.file.file-field-labelSTRING|
-|dremio.store.file.mod-field-enabledBOOLEAN|
-|dremio.store.file.mod-field-labelSTRING|
-|dremio.test.parquet.schema.fallback.onlyBOOLEAN|
-|dremio.ui.outside_communication_disabledBOOLEAN|
-|dremio.wlm.direct_routingBOOLEAN|
-|exec.batch.field.list.size-estimateLONG|
+|column_names|
+|CATALOGS.CATALOG_NAME|
+|CATALOGS.CATALOG_DESCRIPTION|
+|CATALOGS.CATALOG_CONNECT|
+|COLUMNS.TABLE_CATALOG|
+|COLUMNS.TABLE_SCHEMA|
+|COLUMNS.TABLE_NAME|
+|COLUMNS.COLUMN_NAME|
+|COLUMNS.ORDINAL_POSITION|
+|COLUMNS.COLUMN_DEFAULT|
+|COLUMNS.IS_NULLABLE|
+|COLUMNS.DATA_TYPE|
+|COLUMNS.COLUMN_SIZE|
+|COLUMNS.CHARACTER_MAXIMUM_LENGTH|
+|COLUMNS.CHARACTER_OCTET_LENGTH|
+|COLUMNS.NUMERIC_PRECISION|
+|COLUMNS.NUMERIC_PRECISION_RADIX|
+|COLUMNS.NUMERIC_SCALE|
+|COLUMNS.DATETIME_PRECISION|
+|COLUMNS.INTERVAL_TYPE|
+|COLUMNS.INTERVAL_PRECISION|
+|SCHEMATA.CATALOG_NAME|
+|SCHEMATA.SCHEMA_NAME|
+|SCHEMATA.SCHEMA_OWNER|
+|SCHEMATA.TYPE|
+|SCHEMATA.IS_MUTABLE|
+|TABLES.TABLE_CATALOG|
+|TABLES.TABLE_SCHEMA|
+|TABLES.TABLE_NAME|
+|TABLES.TABLE_TYPE|
+|VIEWS.TABLE_CATALOG|
+|VIEWS.TABLE_SCHEMA|
+|VIEWS.TABLE_NAME|
+|VIEWS.VIEW_DEFINITION|
+...
+
+UDF: parse_xml_udf()
+
+After restarting the Dremio cluster, run a test SQL command to see the results of the parse_xml_udf() works. Like this:
+
+SELECT parse_xml_udf(
+'<?xml version="1.0" encoding="UTF-8"?>
+<epl>
+  <region id="eastern">
+    <player id="1">
+      <name>Harry Kane</name>
+      <position>First Base</position>
+    </player>
+  </region>
+  <region id="western">
+    <player id="2">
+      <name>Bruno Fernandes</name>
+      <position>Third Base</position>
+    </player>
+    <player id="3">
+      <name>Sam Grady</name>
+      <position>Picher</position>
+    </player>
+  </region>
+</epl>',
+'//epl/region[@id="western"]/player/position/text()') AS player_names 
+FROM (VALUES(1));
+
+|player_names|
+|:--|
+|{ "results":["Third Base","Picher"]}|
 
 ---
 
