@@ -100,7 +100,7 @@ public class ParseXmlUDF {
 	    String nodeName = "";
 
 	    // Create a JSON like output, with embedded XML if returned.
-	    result.append("{ \"results\":[");
+	    result.append("{\"results\": [");
             for(int i=0; i<nodeList.getLength(); i++){
 	        if (nodeList.item(i).getNodeValue() != null 
 		    && isAsciiPrintable(nodeList.item(i).getNodeValue()))
