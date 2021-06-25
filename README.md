@@ -217,6 +217,7 @@ UDF: parse_xml_udf()
 
 After restarting the Dremio cluster, run a test SQL command to see the results of the parse_xml_udf() works. Like this:
 
+```
 SELECT parse_xml_udf(
 '<?xml version="1.0" encoding="UTF-8"?>
 <epl>
@@ -239,7 +240,7 @@ SELECT parse_xml_udf(
 </epl>',
 '//epl/region[@id="western"]/player/position/text()') AS player_names 
 FROM (VALUES(1));
-
+```
 |player_names|
 |:--|
 |{ "results":["Third Base","Picher"]}|
