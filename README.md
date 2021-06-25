@@ -243,7 +243,6 @@ FROM (VALUES(1));
 ```
 |player_names|
 |:--|
-player_names
 |{"results": ["Bruno Fernandes","Sam Grady"]}|
 
 ---
