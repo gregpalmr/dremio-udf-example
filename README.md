@@ -152,7 +152,7 @@ If you are running Dremio as YARN containers, then you must:
 
 ### Step 5. Test the UDFs
 
-UDF: string_add_udf()
+#### UDF: string_add_udf()
 
 After restarting the Dremio cluster, run a test SQL command to see the results of the string_agg_udf() works. Like this:
 
@@ -165,7 +165,7 @@ After restarting the Dremio cluster, run a test SQL command to see the results o
 |:--|
 |CATALOG_NAME,CATALOG_DESCRIPTION,CATALOG_CONNECT,TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,O|
 
-UDF: concat_udf()
+#### UDF: concat_udf()
 
 After restarting the Dremio cluster, run a test SQL command to see the results of the concat_udf() works. Like this:
 options
@@ -213,7 +213,7 @@ options
 |VIEWS.VIEW_DEFINITION|
 ...
 
-UDF: parse_xml_udf()
+#### UDF: parse_xml_udf()
 
 After restarting the Dremio cluster, run a test SQL command to see the results of the parse_xml_udf() works. Like this:
 
