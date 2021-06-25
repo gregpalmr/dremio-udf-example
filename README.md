@@ -238,12 +238,13 @@ SELECT parse_xml_udf(
     </player>
   </region>
 </epl>',
-'//epl/region[@id="western"]/player/position/text()') AS player_names 
+'//epl/region[@id="western"]/player/name/text()') AS player_names 
 FROM (VALUES(1));
 ```
 |player_names|
 |:--|
-|{ "results":["Third Base","Picher"]}|
+player_names
+|{ "results":["Bruno Fernandes","Sam Grady"]}|
 
 ---
 
